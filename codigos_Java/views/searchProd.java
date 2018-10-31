@@ -7,10 +7,13 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+
 import java.awt.Color;
 import java.awt.SystemColor;
 import javax.swing.JTextField;
@@ -20,9 +23,14 @@ public class searchProd extends JFrame {
 	private JPanel contentPane;
 	private JComboBox comboBox;
 	private String[] nomes;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField textID;
+	private JTextField textCompra;
+	private JTextField textVenda;
+	private String produtoBuscado;
+	private File imagem2;
+	private JPanel painelImagem2;
+	private JLabel lblImagem2;
+	// Instaciar um objeto da classe de comunicação com o servidor
 
 	/**
 	 * Launch the application.
@@ -63,9 +71,12 @@ public class searchProd extends JFrame {
 		btnVoltar.setBounds(335, 227, 89, 23);
 		contentPane.add(btnVoltar);
 		
-		JPanel panel = new JPanel();
-		panel.setBounds(290, 42, 113, 110);
-		contentPane.add(panel);
+		painelImagem2 = new JPanel();
+		painelImagem2.setBounds(290, 42, 113, 110);
+		contentPane.add(painelImagem2);
+		
+		lblImagem2 = new JLabel();
+		painelImagem2.add(lblImagem2);
 		
 		JLabel lblNome = new JLabel("Nome:");
 		lblNome.setBounds(32, 26, 46, 14);
@@ -79,6 +90,13 @@ public class searchProd extends JFrame {
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				produtoBuscado=(String) comboBox.getSelectedItem();
+				// Fazer uma consulta ao servidor para retornar a imagem, o valor de compra, o valor de venda e o nome
+				//textVenda.setText(inserir aqui o retorno da conexão);
+				//textCompra.setText(inserir aqui o retorno da conexao);
+				//textID.setText(inserir aqui o retorno da conexão);
+				//abrirImagem(inserir aqui o retorno da conexão);
+				
 			}
 		});
 		btnBuscar.setBounds(223, 227, 89, 23);
@@ -90,30 +108,39 @@ public class searchProd extends JFrame {
 		lblIdDoProduto.setBounds(32, 91, 127, 14);
 		contentPane.add(lblIdDoProduto);
 		
-		textField = new JTextField();
-		textField.setEditable(false);
-		textField.setBounds(32, 108, 133, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		textID = new JTextField();
+		textID.setEditable(false);
+		textID.setBounds(32, 108, 133, 20);
+		contentPane.add(textID);
+		textID.setColumns(10);
 		
 		JLabel lblValorDeCompra = new JLabel("Valor de Compra");
 		lblValorDeCompra.setBounds(32, 139, 133, 14);
 		contentPane.add(lblValorDeCompra);
 		
-		textField_1 = new JTextField();
-		textField_1.setEditable(false);
-		textField_1.setBounds(31, 153, 135, 20);
-		contentPane.add(textField_1);
-		textField_1.setColumns(10);
+		textCompra = new JTextField();
+		textCompra.setEditable(false);
+		textCompra.setBounds(31, 153, 135, 20);
+		contentPane.add(textCompra);
+		textCompra.setColumns(10);
 		
 		JLabel lblValorDeVenda = new JLabel("Valor de Venda");
 		lblValorDeVenda.setBounds(32, 191, 133, 14);
 		contentPane.add(lblValorDeVenda);
 		
-		textField_2 = new JTextField();
-		textField_2.setEditable(false);
-		textField_2.setBounds(32, 205, 133, 20);
-		contentPane.add(textField_2);
-		textField_2.setColumns(10);
+		textVenda = new JTextField();
+		textVenda.setEditable(false);
+		textVenda.setBounds(32, 205, 133, 20);
+		contentPane.add(textVenda);
+		textVenda.setColumns(10);
+	}
+	
+	private void abrirImagem(Object source) {
+		if(source instanceof File) {
+			ImageIcon icon = new ImageIcon(imagem2.getAbsolutePath());
+			icon.setImage(icon.getImage().getScaledInstance(painelImagem2.getWidth(), painelImagem2.getHeight(), 100));
+			lblImagem2.setIcon(icon);
+		}//Função para abrir imagem seja recuperada do BD ou diretamente do JfileChooser
 	}
 }
+
