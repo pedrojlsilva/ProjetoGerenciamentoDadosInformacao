@@ -75,7 +75,9 @@ public class CriarTabelas extends JFrame {
 					}
 
 				try {
+					BarBarDriver.dropC("produtos");
 					BarBarDriver.CreateTable(nomeTabela.getText());
+					BarBarDriver.CreateBlobColumn("produtos", "imagem");
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

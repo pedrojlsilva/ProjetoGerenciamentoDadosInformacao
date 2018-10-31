@@ -181,10 +181,9 @@ public class BarBarDriver
 		System.out.println(sql);
 	}
 	
-	public static void dropC(String relacao, String Column) throws SQLException
+	public static void dropC(String relacao) throws SQLException
 	{
-		String sql = "alter table "+relacao
-				+ " drop "+ Column;
+		String sql = "drop table "+relacao;
 		myStmt.executeUpdate(sql);
 		System.out.println(sql);
 	}

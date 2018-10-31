@@ -121,10 +121,12 @@ public class addProduto extends JFrame {
 		lblImagem.setBounds(36, 161, 46, 14);
 		contentPane.add(lblImagem);
 		
+		int key = 1;
 		JButton btnNewButton = new JButton("Salvar");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				BarBarDriver.insertProdutos("produtos", Interger.toString(key), imagem.getName(), valorVenda.getText(), valorCompra.getText());
+				key = key+1;
 			}
 		});
 		btnNewButton.setBounds(236, 227, 89, 23);
@@ -151,8 +153,6 @@ public class addProduto extends JFrame {
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setCurrentDirectory(new File ("C:"));
 		fileChooser.showOpenDialog(this);
-		
-		BarBarDriver.CreateBlobColumn("produtos", "imagem");
 		
 		return fileChooser.getSelectedFile();
 	}
