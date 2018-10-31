@@ -8,6 +8,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
@@ -92,11 +94,28 @@ public class searchProd extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				produtoBuscado=(String) comboBox.getSelectedItem();
 				// Fazer uma consulta ao servidor para retornar a imagem, o valor de compra, o valor de venda e o nome
-				//textVenda.setText(inserir aqui o retorno da conex�o);
-				//textCompra.setText(inserir aqui o retorno da conexao);
-				//textID.setText(inserir aqui o retorno da conex�o);
-				//abrirImagem(inserir aqui o retorno da conex�o);
-				
+				try {
+					int columnCount = 0;
+					ResultSetMetaData metadata = null;
+					BarBarDriver.selectSingleCol("produtos", "*");
+					metadata = BarBarDriver.myRs.getMetaData();
+					columnCount = metadata.getColumnCount();
+					int i=1;					
+					while(BarBarDriver.myRs.next())
+					{	
+						for (i=1;i<=columnCount;i++) {
+							System.out.print(BarBarDriver.myRs.getString(i)+" ");					
+						}
+						System.out.println("");
+					}
+					textID.setText(BarBarDriver.myRs.getString(1));
+					textCompra.setText(BarBarDriver.myRs.getString(2));
+					textVenda.setText(BarBarDriver.myRs.getString(3));
+					abrirImagem(BarBarDriver.myRs.getString(i));
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
 			}
 		});
 		btnBuscar.setBounds(223, 227, 89, 23);
