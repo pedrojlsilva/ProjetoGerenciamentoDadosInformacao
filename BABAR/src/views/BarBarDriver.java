@@ -92,28 +92,18 @@ public class BarBarDriver
 		myStmt.executeUpdate(sql);
 	}
 	
-	public static void insertProdutosBlob(String relacao, String Key) throws SQLException, IOException
+	public static void insertProdutosBlob(String relacao, String Key, String path) throws SQLException, IOException
 	{
-		String Blob = "";
 		String sql = "select nome from "+relacao+" where id = "+Key;
 		System.out.println(sql);
 		myRs = myStmt.executeQuery(sql);
-
-		if (myRs.next())
-		{
-			Blob = myRs.getString(1);
-		}
-		Blob = Blob.replaceAll("\\s", "");
 		
 		FileInputStream input = null;
 		FileOutputStream output = null;
 		try {
-		File theFile = new File("C:\\Users\\hugow\\Documents\\GitHub\\GDI\\Hugo\\banco_img_produtos\\"+Blob+".jpg"); //aqui é para ler
-		File newFile = new File("C:\\Users\\hugow\\Documents\\GitHub\\GDI\\Hugo\\banco_img_produtos\\"+Blob+"_teste_in.jpg"); //aqui é para escrever
+		File theFile = new File(path); //aqui é para ler
 		
 		input = new FileInputStream(theFile);
-
-		output = new FileOutputStream(newFile);
 		
 		String sql2 = "update "+relacao
 				+ " set img=? where id = " + Key;
@@ -121,12 +111,6 @@ public class BarBarDriver
 		ppStmt = myConn.prepareStatement(sql2);
 		
 		ppStmt.setBinaryStream(1, input, (int)theFile.length());
-		
-		byte[] buffer = new byte[1024];
-		while(input.read(buffer) >0)
-		{
-			output.write(buffer);
-		}
 
 		System.out.println(sql2);
         System.out.println("Reading file " + theFile.getAbsolutePath());
@@ -135,7 +119,6 @@ public class BarBarDriver
 		}
 		finally {
 			input.close();
-			output.close();
 		}
 
 	}
@@ -256,7 +239,7 @@ public class BarBarDriver
 					userIHM.atributosP();
 					sw = userIHM.getValor_lido();
 					attB = sw.split(",\\s*");
-					insertProdutosBlob(attB[0],attB[1]);
+					insertProdutosBlob(attB[0],attB[1], attB[2]);
 					myConn.close();
 				break;
 				case "downloadBlob":
@@ -279,7 +262,7 @@ public class BarBarDriver
 				break;
 				case "delete":
 					OracleConnection();
-					dropC("produtos","img");
+					dropC("produtos");
 					myConn.close();
 				break;
 				case "close":

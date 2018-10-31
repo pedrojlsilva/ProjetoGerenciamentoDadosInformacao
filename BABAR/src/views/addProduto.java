@@ -34,6 +34,7 @@ public class addProduto extends JFrame {
 	private JPanel painelImagem;
 	private File imagem;
 	private JLabel lblimagem;
+	private int key=1;
 	//private Produto produto;
 
 	/**
@@ -121,11 +122,21 @@ public class addProduto extends JFrame {
 		lblImagem.setBounds(36, 161, 46, 14);
 		contentPane.add(lblImagem);
 		
-		int key = 1;
 		JButton btnNewButton = new JButton("Salvar");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BarBarDriver.insertProdutos("produtos", Interger.toString(key), imagem.getName(), valorVenda.getText(), valorCompra.getText());
+				try {
+					BarBarDriver.OracleConnection();
+					BarBarDriver.insertProdutos("produtos",String.valueOf(key), nomeProd.getText(), valorVenda.getText(), valorCompra.getText());
+					BarBarDriver.insertProdutosBlob("produtos",String.valueOf(key),imagem.getAbsolutePath());
+					BarBarDriver.myConn.close();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				key = key+1;
 			}
 		});
