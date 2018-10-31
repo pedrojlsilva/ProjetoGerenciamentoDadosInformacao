@@ -104,6 +104,7 @@ public class addProduto extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				imagem=selecionarImagem();
 				abrirImagem(imagem);
+				//conexao.setImagem(getImagem())
 				
 			}
 		});

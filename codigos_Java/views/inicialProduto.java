@@ -65,7 +65,12 @@ public class inicialProduto extends JFrame {
 		btnNewButton_1.setBounds(293, 51, 89, 23);
 		contentPane.add(btnNewButton_1);
 		
-		JButton btnVoltar = new JButton("Voltar");
+		JButton btnVoltar = new JButton("Cancelar");
+		btnVoltar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+			}
+		});
 		btnVoltar.setBounds(335, 227, 89, 23);
 		contentPane.add(btnVoltar);
 		
