@@ -7,3 +7,5 @@ Diego Matos,
 Gustavo Camargo, 
 Hugo Abreu, 
 Pedro Jorge.
+
+Recomendamos a instalação dos plugins JDBC e Swing no eclipse para manipulação mais fácil do projeto.
