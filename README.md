@@ -1,4 +1,4 @@
-
+TUDO JUNTO NO BARBAR
 
 Este é o Repositório para os arquivos dos trabalhos da disciplina de Gerenciamento de Dados e Informações - IF685 da Universidade Federal de Pernambuco.
 
