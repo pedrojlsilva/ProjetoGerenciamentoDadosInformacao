@@ -29,12 +29,12 @@ public class addProduto extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField nomeProd;
+	private JTextField IDProd;
 	private JTextField valorCompra;
 	private JTextField valorVenda;
 	private JPanel painelImagem;
 	private File imagem;
 	private JLabel lblimagem;
-	private int key=1;
 	//private Produto produto;
 
 	/**
@@ -65,40 +65,40 @@ public class addProduto extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JButton btnVoltar = new JButton("Cancelar");
-		btnVoltar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-		btnVoltar.setBounds(335, 227, 89, 23);
-		contentPane.add(btnVoltar);
-		
 		nomeProd = new JTextField();
-		nomeProd.setBounds(36, 42, 191, 20);
+		nomeProd.setBounds(36, 52, 190, 20);
 		contentPane.add(nomeProd);
 		nomeProd.setColumns(10);
 		
+		IDProd = new JTextField();
+		IDProd.setBounds(60, 13, 20, 20);
+		contentPane.add(IDProd);
+		IDProd.setColumns(10);
+		
 		valorCompra = new JTextField();
-		valorCompra.setBounds(36, 85, 191, 20);
+		valorCompra.setBounds(36, 95, 191, 20);
 		contentPane.add(valorCompra);
 		valorCompra.setColumns(10);
 		
+		JLabel lblID = new JLabel("ID:");
+		lblID.setBounds(36, 11, 70, 25);
+		contentPane.add(lblID);
+		
 		JLabel lblNome = new JLabel("Nome:");
-		lblNome.setBounds(36, 26, 46, 14);
+		lblNome.setBounds(36, 30, 70, 25);
 		contentPane.add(lblNome);
 		
 		JLabel lblValorDeCompra = new JLabel("Valor de Compra");
-		lblValorDeCompra.setBounds(36, 71, 124, 14);
+		lblValorDeCompra.setBounds(36, 81, 124, 14);
 		contentPane.add(lblValorDeCompra);
 		
 		valorVenda = new JTextField();
-		valorVenda.setBounds(36, 129, 191, 20);
+		valorVenda.setBounds(36, 139, 191, 20);
 		contentPane.add(valorVenda);
 		valorVenda.setColumns(10);
 		
 		JLabel lblValorDeVenda = new JLabel("Valor de venda");
-		lblValorDeVenda.setBounds(36, 113, 86, 14);
+		lblValorDeVenda.setBounds(36, 123, 86, 14);
 		contentPane.add(lblValorDeVenda);
 		
 		JButton btnAdicionarImagem = new JButton("Adicionar Imagem");
@@ -115,19 +115,15 @@ public class addProduto extends JFrame {
 				
 			}
 		});
-		btnAdicionarImagem.setBounds(36, 186, 147, 23);
+		btnAdicionarImagem.setBounds(36, 196, 147, 23);
 		contentPane.add(btnAdicionarImagem);
-		
-		JLabel lblImagem = new JLabel("Imagem");
-		lblImagem.setBounds(36, 161, 46, 14);
-		contentPane.add(lblImagem);
 		
 		JButton btnNewButton = new JButton("Salvar");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					BarBarDriver.OracleConnection();
-					BarBarDriver.insertProdutos("produtos",String.valueOf(key), nomeProd.getText(), valorVenda.getText(), valorCompra.getText(),imagem.getAbsolutePath());
+					BarBarDriver.insertProdutos(inicialProduto.nomeTabela.getText(),IDProd.getText(), nomeProd.getText(), valorCompra.getText(),valorVenda.getText() ,imagem.getAbsolutePath());
 					BarBarDriver.myConn.close();
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
@@ -136,15 +132,23 @@ public class addProduto extends JFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				key = key+1;
 			}
 		});
-		btnNewButton.setBounds(236, 227, 89, 23);
+		btnNewButton.setBounds(236, 220, 89, 23);
 		contentPane.add(btnNewButton);
+		
+		JButton btnVoltar = new JButton("Cancelar");
+		btnVoltar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		btnVoltar.setBounds(335, 220, 89, 23);
+		contentPane.add(btnVoltar);
 		
 		painelImagem = new JPanel();
 		painelImagem.setBorder(null);
-		painelImagem.setBounds(280, 42, 117, 117);
+		painelImagem.setBounds(280, 42, 150, 150);
 		contentPane.add(painelImagem);
 		
 		lblimagem = new JLabel("");

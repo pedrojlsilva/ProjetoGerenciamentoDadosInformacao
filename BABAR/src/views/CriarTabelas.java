@@ -62,32 +62,21 @@ public class CriarTabelas extends JFrame {
 		contentPane.add(lblNome);
 		
 		nomeTabela = new JTextField();
-		nomeTabela.setBounds(36, 42, 191, 20);
+		nomeTabela.setBounds(36, 42, 120, 20);
 		contentPane.add(nomeTabela);
 		nomeTabela.setColumns(10);
 		nomeTabela.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 					try {
 						BarBarDriver.OracleConnection();
+						//BarBarDriver.dropC(nomeTabela.getText());
+						BarBarDriver.CreateTable(nomeTabela.getText());
+						BarBarDriver.CreateBlobColumn(nomeTabela.getText(), "imagem");
+						BarBarDriver.myConn.close();
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-
-				try {
-					BarBarDriver.dropC("produtos");
-					BarBarDriver.CreateTable(nomeTabela.getText());
-					BarBarDriver.CreateBlobColumn(nomeTabela.getText(), "imagem");
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					BarBarDriver.myConn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 			});
 	}

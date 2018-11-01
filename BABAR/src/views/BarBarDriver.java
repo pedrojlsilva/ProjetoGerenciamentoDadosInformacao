@@ -66,12 +66,29 @@ public class BarBarDriver
 		System.out.println(sql);
 		myRs = myStmt.executeQuery(sql);
 		
-		ResultSetMetaData metadata = myRs.getMetaData();
+		/*ResultSetMetaData metadata = myRs.getMetaData();
 		int columnCount = metadata.getColumnCount(); 
 		int i=1;
-		/*while(myRs.next())
+		while(myRs.next())
 		{	
 			for (i=1;i<=columnCount;i++)
+				System.out.print(myRs.getString(i)+" ");
+			System.out.println("");
+		}*/
+	}
+	
+	public static void selectWhere(String relacao, String colunas, String cond) throws SQLException
+	{
+		String sql = "select "+colunas+" from "+relacao +" where id = "+ cond;
+		System.out.println(sql);
+		myRs = myStmt.executeQuery(sql);
+		
+		/*ResultSetMetaData metadata = myRs.getMetaData();
+		int columnCount = metadata.getColumnCount(); 
+		
+		while(myRs.next())
+		{	
+			for (int i=1;i<=columnCount;i++)
 				System.out.print(myRs.getString(i)+" ");
 			System.out.println("");
 		}*/
@@ -106,49 +123,45 @@ public class BarBarDriver
 		}
 	}
 	
-	public static String downloadProdutosBlob(String Key) throws SQLException, IOException
+	public static String downloadProdutosBlob(String Key, String relacao) throws SQLException, IOException
 	{
 		String Blob = "";
-		String sql = "select nome from produtos where id = "+Key;
+		String sql = "select nome from "+ relacao+" where id = "+Key;
 		myRs = myStmt.executeQuery(sql);
-
+		
 		if (myRs.next())
 		{
 			Blob = myRs.getString(1);
 		}
 		Blob = Blob.replaceAll("\\s", "");
 				
-		File newFile = new File("C:\\Users\\hugow\\Documents\\UFPE\\UFPE - 10ºp\\GDI\\BABAR\\down_icon\\"+Blob+"_download.jpg"); //aqui é para escrever
+		File newFile = new File("C:\\Users\\Public\\Documents\\"+Blob+"_download.jpg"); //aqui é para escrever
 		FileOutputStream output = new FileOutputStream(newFile);
 				
-		String sql2 = "select img from produtos where id = " + Key;
+		String sql2 = "select imagem from "+ relacao+" where id = " + Key;
 
 		myRs = myStmt.executeQuery(sql2);
 
 		if (myRs.next()) {
 
-			FileInputStream input = (FileInputStream) myRs.getBinaryStream("img"); 
+			byte[] bytes = myRs.getBytes(1);
 			
-			byte[] buffer = new byte[1024];
-			while (input.read(buffer) > 0) {
-				output.write(buffer);
-			}	
+			output.write(bytes);	
 			output.close();
 		}
 		
 		return newFile.getAbsolutePath();
 	}
 	
-	public static void selectWhere(String relacao, String colunas, String cond) throws SQLException
-	{
-		String sql = "select "+colunas + " from "+relacao+" where nome = '"+ cond +"'";
-		System.out.println(sql);
-		myStmt.executeUpdate(sql);
-	}
-	
 	public static void dropC(String relacao) throws SQLException
 	{
-		String sql = "drop table "+relacao;
+		String sql = "  DECLARE cnt NUMBER;\n" + 
+				"  BEGIN\n" + 
+				"    SELECT COUNT(*) INTO cnt FROM user_tables WHERE table_name = '"+relacao+"';\n" + 
+				"    IF cnt <> 0 THEN\n" + 
+				"      EXECUTE IMMEDIATE 'DROP TABLE "+ relacao+"';\n" + 
+				"    END IF;\n" + 
+				"  END;\n";
 		myStmt.executeUpdate(sql);
 		System.out.println(sql);
 	}
@@ -168,7 +181,7 @@ public class BarBarDriver
 					"    nome VARCHAR2(30) NOT NULL,\r\n" + 
 					"    valor_compra NUMBER(10,2) NOT NULL,\r\n" + 
 					"    valor_venda NUMBER(10,2) NOT NULL,\r\n" + 
-					"    CONSTRAINT Produtos_pk PRIMARY KEY (id)\r\n" + 
+					"    CONSTRAINT "+ nometabela+"_pk PRIMARY KEY (id)\r\n" + 
 					")";
 		System.out.println(sql);
 
@@ -178,75 +191,6 @@ public class BarBarDriver
 	public static void main() throws SQLException
 	
 	{
-		String[] attB;
-		boolean flag = true;
-					
-		//MySQLConnection();
-		
-		IHM userIHM = new usuarioIHM();
-		
-		while(flag == true) {
-		userIHM.selecao();
-		String sw = userIHM.getValor_lido();
-		
-		try {		
-			switch (sw)
-			{
-				case "select":
-					OracleConnection();
-					userIHM.atributosP();
-					sw = userIHM.getValor_lido();
-					attB = sw.split(",\\s*");
-					select(attB[0],attB[1]);
-					myConn.close();
-					break;
-				case "insertProdutos":
-					OracleConnection();
-					userIHM.atributosP();
-					sw = userIHM.getValor_lido();
-					attB = sw.split(",\\s*");
-					insertProdutos(attB[0],attB[1],attB[2],attB[3],attB[4], attB[5]);
-					myConn.close();
-					break;
-				case "createBlob":
-					OracleConnection();
-					userIHM.atributosP();
-					sw = userIHM.getValor_lido();
-					attB = sw.split(",\\s*");
-					CreateBlobColumn(attB[0],attB[1]);
-					myConn.close();
-					break;
-				case "downloadBlob":
-					OracleConnection();
-					userIHM.atributosP();
-					sw = userIHM.getValor_lido();
-					attB = sw.split(",\\s*");
-					downloadProdutosBlob(attB[0]);
-					myConn.close();
-				break;
-				case "Create":
-					OracleConnection();
-					CreateTable("produtos");	
-					myConn.close();
-				break;
-				case "delete":
-					OracleConnection();
-					dropC("produtos");
-					myConn.close();
-				break;
-				case "close":
-					OracleConnection();
-					myConn.close();
-					flag = false;
-					System.out.println(flag);
-				break;
-			}
-		}
-		catch (Exception exc) 
-		{
-			exc.printStackTrace();
-		}
-	}
 	}
 
 }
