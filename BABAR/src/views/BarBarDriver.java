@@ -60,59 +60,43 @@ public class BarBarDriver
 		
 	}
 	
-	public static void selectSingleCol(String relacao, String Coluna) throws SQLException
+	public static void select(String relacao, String Coluna) throws SQLException
 	{
 		String sql = ("select "+Coluna+" from "+relacao);
-		myRs = myStmt.executeQuery(sql);
 		System.out.println(sql);
+		myRs = myStmt.executeQuery(sql);
 		
 		ResultSetMetaData metadata = myRs.getMetaData();
 		int columnCount = metadata.getColumnCount(); 
 		int i=1;
-		while(myRs.next())
+		/*while(myRs.next())
 		{	
 			for (i=1;i<=columnCount;i++)
 				System.out.print(myRs.getString(i)+" ");
 			System.out.println("");
-		}
+		}*/
 	}
 	
-	public static void insertProdutos(String relacao, String Key, String c1, String c2, String c3) throws SQLException
+	public static void insertProdutos(String relacao, String Key, String c1, String c2, String c3, String path) throws SQLException, IOException
 	{
-		String sql = "insert into "+relacao
-				+ " (id, nome, valor_compra, valor_venda)"
-				+ " values (" + Key + ", '" + c1 
-				+ "', " + c2
-				+ ", " + c3
-				+ ")";
-		//sql = "insert into produtos (id, nome, valor_compra, valor_venda) values (1, 'prod1', 1, 2)";
-		
-		System.out.println(sql);
-
-		myStmt.executeUpdate(sql);
-	}
-	
-	public static void insertProdutosBlob(String relacao, String Key, String path) throws SQLException, IOException
-	{
-		String sql = "select nome from "+relacao+" where id = "+Key;
-		System.out.println(sql);
-		myRs = myStmt.executeQuery(sql);
-		
 		FileInputStream input = null;
-		FileOutputStream output = null;
 		try {
 		File theFile = new File(path); //aqui é para ler
 		
 		input = new FileInputStream(theFile);
 		
-		String sql2 = "update "+relacao
-				+ " set img=? where id = " + Key;
+		String sql = "insert into "+relacao
+				+ " (id, nome, valor_compra, valor_venda, imagem)"
+				+ " values (" + Key + ", '" + c1 
+				+ "', " + c2
+				+ ", " + c3
+				+ ", ?)";
 		
-		ppStmt = myConn.prepareStatement(sql2);
-		
+		System.out.println(sql);
+		ppStmt = myConn.prepareStatement(sql);
 		ppStmt.setBinaryStream(1, input, (int)theFile.length());
 
-		System.out.println(sql2);
+		System.out.println(sql);
         System.out.println("Reading file " + theFile.getAbsolutePath());
         System.out.println("Store file in the database.");
 		ppStmt.executeUpdate();
@@ -120,13 +104,12 @@ public class BarBarDriver
 		finally {
 			input.close();
 		}
-
 	}
 	
-	public static void downloadProdutosBlob(String banco, String relacao, String Key) throws SQLException, IOException
+	public static String downloadProdutosBlob(String Key) throws SQLException, IOException
 	{
 		String Blob = "";
-		String sql = "select nome from "+banco+"."+relacao+" where id = "+Key;
+		String sql = "select nome from produtos where id = "+Key;
 		myRs = myStmt.executeQuery(sql);
 
 		if (myRs.next())
@@ -135,11 +118,10 @@ public class BarBarDriver
 		}
 		Blob = Blob.replaceAll("\\s", "");
 				
-		File newFile = new File("C:\\Users\\hugow\\Documents\\GitHub\\GDI\\Hugo\\banco_img_produtos\\"+Blob+"_download.jpg"); //aqui é para escrever
+		File newFile = new File("C:\\Users\\hugow\\Documents\\UFPE\\UFPE - 10ºp\\GDI\\BABAR\\down_icon\\"+Blob+"_download.jpg"); //aqui é para escrever
 		FileOutputStream output = new FileOutputStream(newFile);
 				
-		String sql2 = "select img from "+banco+"."+relacao
-				+ " where id = " + Key;
+		String sql2 = "select img from produtos where id = " + Key;
 
 		myRs = myStmt.executeQuery(sql2);
 
@@ -153,15 +135,15 @@ public class BarBarDriver
 			}	
 			output.close();
 		}
+		
+		return newFile.getAbsolutePath();
 	}
 	
-	public static void update(String relacao) throws SQLException
+	public static void selectWhere(String relacao, String colunas, String cond) throws SQLException
 	{
-		String sql = "update "+relacao
-				+ " set email = 'bolado_69@hotmail.com', first_name = 'Paulo', last_name = 'Luiz'"
-				+ " where id = 2";
-		myStmt.executeUpdate(sql);
+		String sql = "select "+colunas + " from "+relacao+" where nome = '"+ cond +"'";
 		System.out.println(sql);
+		myStmt.executeUpdate(sql);
 	}
 	
 	public static void dropC(String relacao) throws SQLException
@@ -174,7 +156,7 @@ public class BarBarDriver
 	public static void CreateBlobColumn(String relacao, String newcolumn) throws SQLException
 	{
 		String sql = "ALTER TABLE "+relacao
-				+ " ADD "+ newcolumn +" LONGBLOB NOT NULL";
+				+ " ADD "+ newcolumn +" BLOB NOT NULL";
 		System.out.println(sql);
 		myStmt.executeUpdate(sql);
 	}
@@ -215,7 +197,7 @@ public class BarBarDriver
 					userIHM.atributosP();
 					sw = userIHM.getValor_lido();
 					attB = sw.split(",\\s*");
-					selectSingleCol(attB[0],attB[1]);
+					select(attB[0],attB[1]);
 					myConn.close();
 					break;
 				case "insertProdutos":
@@ -223,7 +205,7 @@ public class BarBarDriver
 					userIHM.atributosP();
 					sw = userIHM.getValor_lido();
 					attB = sw.split(",\\s*");
-					insertProdutos(attB[0],attB[1],attB[2],attB[3],attB[4]);
+					insertProdutos(attB[0],attB[1],attB[2],attB[3],attB[4], attB[5]);
 					myConn.close();
 					break;
 				case "createBlob":
@@ -234,25 +216,12 @@ public class BarBarDriver
 					CreateBlobColumn(attB[0],attB[1]);
 					myConn.close();
 					break;
-				case "insertBlob":
-					OracleConnection();
-					userIHM.atributosP();
-					sw = userIHM.getValor_lido();
-					attB = sw.split(",\\s*");
-					insertProdutosBlob(attB[0],attB[1], attB[2]);
-					myConn.close();
-				break;
 				case "downloadBlob":
 					OracleConnection();
 					userIHM.atributosP();
 					sw = userIHM.getValor_lido();
 					attB = sw.split(",\\s*");
-					downloadProdutosBlob(attB[0],attB[1],attB[2]);
-					myConn.close();
-				break;
-				case "update":
-					OracleConnection();
-					update("produtos");	
+					downloadProdutosBlob(attB[0]);
 					myConn.close();
 				break;
 				case "Create":

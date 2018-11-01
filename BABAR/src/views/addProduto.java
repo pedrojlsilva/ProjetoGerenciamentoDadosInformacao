@@ -127,8 +127,7 @@ public class addProduto extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					BarBarDriver.OracleConnection();
-					BarBarDriver.insertProdutos("produtos",String.valueOf(key), nomeProd.getText(), valorVenda.getText(), valorCompra.getText());
-					BarBarDriver.insertProdutosBlob("produtos",String.valueOf(key),imagem.getAbsolutePath());
+					BarBarDriver.insertProdutos("produtos",String.valueOf(key), nomeProd.getText(), valorVenda.getText(), valorCompra.getText(),imagem.getAbsolutePath());
 					BarBarDriver.myConn.close();
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
@@ -171,7 +170,6 @@ public class addProduto extends JFrame {
 	private byte[] getImagem() {
 		boolean isPNG=false;
 		
-		
 		if(imagem!=null) {
 			isPNG=imagem.getName().endsWith("png");
 			
@@ -209,14 +207,6 @@ public class addProduto extends JFrame {
 		
 		return null;
 	}//finaliza��o da fun��o getImagem
-	
-	private void criarProduto(){
-		/* produto.setNome();
-		 * produto.setValorCompra();
-		 * produto.setValorVenda();
-		 * 
-		*/
-	}
 	
 	private void abrirImagem(Object source) {
 		if(source instanceof File) {
