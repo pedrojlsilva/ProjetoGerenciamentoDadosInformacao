@@ -70,6 +70,12 @@ public class inicialProduto extends JFrame {
 		JButton btnVoltar = new JButton("Cancelar");
 		btnVoltar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				try {
+					BarBarDriver.myConn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				dispose();
 			}
 		});

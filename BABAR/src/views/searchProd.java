@@ -8,8 +8,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Vector;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
@@ -49,7 +51,7 @@ public class searchProd extends JFrame {
 			}
 		});
 	}
-
+	
 	/**
 	 * Create the frame.
 	 */
@@ -84,10 +86,29 @@ public class searchProd extends JFrame {
 		lblNome.setBounds(32, 26, 46, 14);
 		contentPane.add(lblNome);
 		
-		comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(nomes));
-		comboBox.setBounds(31, 42, 134, 20);
+
+	    Vector comboBoxItems=new Vector();
+	    comboBoxItems.add("prod1");
+		final DefaultComboBoxModel model = new DefaultComboBoxModel(comboBoxItems);
+		JComboBox comboBox = new JComboBox(model);
+		comboBox.setBounds(31, 42, 240, 20);
 		contentPane.add(comboBox);
+		
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					BarBarDriver.OracleConnection();
+					BarBarDriver.selectWhere("produtos", "ID, valor_compra, valor_venda, imagem", String.valueOf(comboBox.getSelectedItem()));
+					textID.setText(BarBarDriver.myRs.getString(1));
+					textCompra.setText(BarBarDriver.myRs.getString(2));
+					textVenda.setText(BarBarDriver.myRs.getString(3));
+					abrirImagem(BarBarDriver.myRs.getString(4));
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(new ActionListener() {
@@ -95,23 +116,16 @@ public class searchProd extends JFrame {
 				produtoBuscado=(String) comboBox.getSelectedItem();
 				// Fazer uma consulta ao servidor para retornar a imagem, o valor de compra, o valor de venda e o nome
 				try {
-					int columnCount = 0;
 					ResultSetMetaData metadata = null;
-					BarBarDriver.selectSingleCol("produtos", "*");
+					BarBarDriver.OracleConnection();
+					BarBarDriver.select("produtos", "nome");
 					metadata = BarBarDriver.myRs.getMetaData();
-					columnCount = metadata.getColumnCount();
-					int i=1;					
+					metadata.getColumnCount();
 					while(BarBarDriver.myRs.next())
 					{	
-						for (i=1;i<=columnCount;i++) {
-							System.out.print(BarBarDriver.myRs.getString(i)+" ");					
-						}
-						System.out.println("");
+						model.addElement(BarBarDriver.myRs.getString(1));
+						//System.out.println(BarBarDriver.myRs.getString(1));
 					}
-					textID.setText(BarBarDriver.myRs.getString(1));
-					textCompra.setText(BarBarDriver.myRs.getString(2));
-					textVenda.setText(BarBarDriver.myRs.getString(3));
-					abrirImagem(BarBarDriver.myRs.getString(i));
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -154,11 +168,20 @@ public class searchProd extends JFrame {
 		textVenda.setColumns(10);
 	}
 	
-	private void abrirImagem(Object source) {
-		if(source instanceof File) {
-			ImageIcon icon = new ImageIcon(imagem2.getAbsolutePath());
+	private void abrirImagem(String ID) {
+		String path = null;
+		try {
+			path = BarBarDriver.downloadProdutosBlob(ID);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			ImageIcon icon = new ImageIcon(path);
 			icon.setImage(icon.getImage().getScaledInstance(painelImagem2.getWidth(), painelImagem2.getHeight(), 100));
 			lblImagem2.setIcon(icon);
-		}//Fun��o para abrir imagem seja recuperada do BD ou diretamente do JfileChooser
+	//Fun��o para abrir imagem seja recuperada do BD ou diretamente do JfileChooser
 	}
 }
