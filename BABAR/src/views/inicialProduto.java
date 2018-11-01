@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,7 +16,8 @@ import java.awt.event.ActionEvent;
 public class inicialProduto extends JFrame {
 	
 	private JPanel contentPane;
-
+	public static JTextField nomeTabela;
+	
 	/**
 	 * Launch the application.
 	 * @throws SQLException 
@@ -70,12 +72,6 @@ public class inicialProduto extends JFrame {
 		JButton btnVoltar = new JButton("Cancelar");
 		btnVoltar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					BarBarDriver.myConn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				dispose();
 			}
 		});
@@ -95,12 +91,17 @@ public class inicialProduto extends JFrame {
 				create.setVisible(true);
 			}
 		});
-		btnNewButton_2.setBounds(150, 80, 120, 25);
+		btnNewButton_2.setBounds(150, 200, 120, 25);
 		contentPane.add(btnNewButton_2);
 		
-		JLabel lblProduto = new JLabel("O que voc\u00EA deseja?");
-		lblProduto.setBounds(163, 24, 138, 16);
-		contentPane.add(lblProduto);
+		JLabel lblTabelaUsada = new JLabel("Tabela Em Uso: ");
+		lblTabelaUsada.setBounds(170, 50, 180, 20);
+		contentPane.add(lblTabelaUsada);
+		
+		nomeTabela = new JTextField();
+		nomeTabela.setBounds(160, 80, 110, 20);
+		contentPane.add(nomeTabela);
+		nomeTabela.setColumns(10);
 	}
 
 }

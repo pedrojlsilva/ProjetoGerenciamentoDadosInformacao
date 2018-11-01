@@ -7,9 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
@@ -24,14 +22,14 @@ import javax.swing.JTextField;
 
 public class searchProd extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JComboBox comboBox;
-	private String[] nomes;
-	private JTextField textID;
+	private JTextField textNome;
 	private JTextField textCompra;
 	private JTextField textVenda;
-	private String produtoBuscado;
-	private File imagem2;
 	private JPanel painelImagem2;
 	private JLabel lblImagem2;
 	// Instaciar um objeto da classe de comunica��o com o servidor
@@ -56,7 +54,6 @@ public class searchProd extends JFrame {
 	 * Create the frame.
 	 */
 	public searchProd(String []  produtos) {
-		this.nomes=produtos;
 		setTitle("Procurar Produto");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -76,33 +73,35 @@ public class searchProd extends JFrame {
 		contentPane.add(btnVoltar);
 		
 		painelImagem2 = new JPanel();
-		painelImagem2.setBounds(290, 42, 113, 110);
+		painelImagem2.setBounds(250, 40, 150, 150);
 		contentPane.add(painelImagem2);
 		
 		lblImagem2 = new JLabel();
-		painelImagem2.add(lblImagem2);
-		
-		JLabel lblNome = new JLabel("Nome:");
-		lblNome.setBounds(32, 26, 46, 14);
-		contentPane.add(lblNome);
-		
+		painelImagem2.add(lblImagem2);	
 
-	    Vector comboBoxItems=new Vector();
+	    Vector<String> comboBoxItems=new Vector<String>();
 	    comboBoxItems.add("prod1");
-		final DefaultComboBoxModel model = new DefaultComboBoxModel(comboBoxItems);
-		JComboBox comboBox = new JComboBox(model);
-		comboBox.setBounds(31, 42, 240, 20);
+		final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(comboBoxItems);
+		JComboBox<String> comboBox = new JComboBox<String>(model);
+		comboBox.setBounds(31, 52, 120, 20);
 		contentPane.add(comboBox);
 		
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					BarBarDriver.OracleConnection();
-					BarBarDriver.selectWhere("produtos", "ID, valor_compra, valor_venda, imagem", String.valueOf(comboBox.getSelectedItem()));
-					textID.setText(BarBarDriver.myRs.getString(1));
-					textCompra.setText(BarBarDriver.myRs.getString(2));
-					textVenda.setText(BarBarDriver.myRs.getString(3));
-					abrirImagem(BarBarDriver.myRs.getString(4));
+					BarBarDriver.selectWhere(inicialProduto.nomeTabela.getText(), "nome, valor_compra, valor_venda", String.valueOf(comboBox.getSelectedItem()));
+					if (BarBarDriver.myRs.next())
+					{
+						textNome.setText(BarBarDriver.myRs.getString(1));
+						textCompra.setText(BarBarDriver.myRs.getString(2));
+						textVenda.setText(BarBarDriver.myRs.getString(3));
+						abrirImagem(String.valueOf(comboBox.getSelectedItem()));
+					}else
+					{
+						System.out.println("null");
+					}
+					BarBarDriver.myConn.close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -113,19 +112,15 @@ public class searchProd extends JFrame {
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				produtoBuscado=(String) comboBox.getSelectedItem();
-				// Fazer uma consulta ao servidor para retornar a imagem, o valor de compra, o valor de venda e o nome
 				try {
-					ResultSetMetaData metadata = null;
 					BarBarDriver.OracleConnection();
-					BarBarDriver.select("produtos", "nome");
-					metadata = BarBarDriver.myRs.getMetaData();
-					metadata.getColumnCount();
+					BarBarDriver.select(inicialProduto.nomeTabela.getText(), "ID");
 					while(BarBarDriver.myRs.next())
 					{	
 						model.addElement(BarBarDriver.myRs.getString(1));
 						//System.out.println(BarBarDriver.myRs.getString(1));
 					}
+					BarBarDriver.myConn.close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -135,17 +130,23 @@ public class searchProd extends JFrame {
 		btnBuscar.setBounds(223, 227, 89, 23);
 		contentPane.add(btnBuscar);
 		
-		JLabel lblIdDoProduto = new JLabel("ID do produto:");
-		lblIdDoProduto.setForeground(Color.BLACK);
-		lblIdDoProduto.setBackground(SystemColor.menu);
-		lblIdDoProduto.setBounds(32, 91, 127, 14);
-		contentPane.add(lblIdDoProduto);
+		JLabel lblNomeDoProduto = new JLabel("Nome do produto:");
+		lblNomeDoProduto.setForeground(Color.BLACK);
+		lblNomeDoProduto.setBackground(SystemColor.menu);
+		lblNomeDoProduto.setBounds(32, 91, 127, 14);
+		contentPane.add(lblNomeDoProduto);
 		
-		textID = new JTextField();
-		textID.setEditable(false);
-		textID.setBounds(32, 108, 133, 20);
-		contentPane.add(textID);
-		textID.setColumns(10);
+		JLabel lblID = new JLabel("ID:");
+		lblID.setBounds(32, 25, 80, 20);
+		lblID.setForeground(Color.BLACK);
+		lblID.setBackground(SystemColor.menu);
+		contentPane.add(lblID);
+		
+		textNome = new JTextField();
+		textNome.setEditable(false);
+		textNome.setBounds(32, 108, 200, 20);
+		contentPane.add(textNome);
+		textNome.setColumns(10);
 		
 		JLabel lblValorDeCompra = new JLabel("Valor de Compra");
 		lblValorDeCompra.setBounds(32, 139, 133, 14);
@@ -171,7 +172,8 @@ public class searchProd extends JFrame {
 	private void abrirImagem(String ID) {
 		String path = null;
 		try {
-			path = BarBarDriver.downloadProdutosBlob(ID);
+			//BarBarDriver.OracleConnection();
+			path = BarBarDriver.downloadProdutosBlob(ID, inicialProduto.nomeTabela.getText());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -180,8 +182,8 @@ public class searchProd extends JFrame {
 			e.printStackTrace();
 		}
 			ImageIcon icon = new ImageIcon(path);
-			icon.setImage(icon.getImage().getScaledInstance(painelImagem2.getWidth(), painelImagem2.getHeight(), 100));
+			icon.setImage(icon.getImage().getScaledInstance(painelImagem2.getWidth(), painelImagem2.getHeight(), 120));
 			lblImagem2.setIcon(icon);
-	//Fun��o para abrir imagem seja recuperada do BD ou diretamente do JfileChooser
 	}
+
 }
